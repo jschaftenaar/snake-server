@@ -1,0 +1,15 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io('http://localhost');
+
+    move = function(direction) {
+        socket.emit('move', { direction: direction } );
+    }
+
+    socket.on('status', function(data) {
+        console.log(data);
+        // socket.emit('move', {
+        //     my: 'data'
+        // });
+    });
+</script>
