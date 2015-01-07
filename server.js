@@ -4,7 +4,10 @@ var fs  = require('fs');
 
 var SnakeServer = require('./snake/Game.js');
 
-app.listen(1337, '127.0.0.1');
+var serverIp = '0.0.0.0';
+var serverPort = 4321;
+
+app.listen(serverPort, serverIp);
 
 function handler(req, res) {
     fs.readFile(__dirname + '/index.html', function(err, data) {
@@ -23,9 +26,22 @@ var game = new SnakeServer();
 io.on('connection', function(socket) {
     socket.emit('status', game.getStatus());
 
+    game.onAdvanceTick = function(allPlayersDead) {
+        if (!allPlayersDead) {
+            socket.emit('status', game.getStatus());
+        }
+    }
+
+    socket.on('start', function() {
+        game.startGame();
+    });
+
     socket.on('move', function (frame) {
+        game.recieveFrame(frame);
         socket.emit('status', game.getStatus());
     });
+
+
 });
 
-console.log('Server running at http://127.0.0.1:1337/');
+console.log('Server running on http://' + serverIp + ':' + serverPort);

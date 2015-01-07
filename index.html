@@ -1,15 +1,18 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    var socket = io('http://localhost');
-
-    move = function(direction) {
-        socket.emit('move', { direction: direction } );
-    }
+    var socket = io(window.location.hostname);
+    var tick = 0;
+    var move = function(direction) {
+        socket.emit('move', { playerId: 0, direction: direction, tick: tick } );
+    };
+    var start = function() {
+        socket.emit('start');
+    };
 
     socket.on('status', function(data) {
-        console.log(data);
-        // socket.emit('move', {
-        //     my: 'data'
-        // });
+        tick = data.tick;
+        console.log(data.players[0].snake.parts);
+        console.log(data.players[0].isDead);
+        console.log(data.players[0].snake.direction);
     });
 </script>
