@@ -12,7 +12,7 @@
     socket.on('status', function(data) {
         tick = data.tick;
         console.log(data.players[0].snake.parts);
-        console.log(data.players[0].isDead);
         console.log(data.players[0].snake.direction);
+        console.log('is dead: ' + data.players[0].isDead);
     });
 </script>

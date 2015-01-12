@@ -11,7 +11,7 @@ function Snake(length, startingPosition, direction, forbiddenBlocks, map) {
     }
 };
 
-Snake.prototype.advance = function(tick) {
+Snake.prototype.advance = function(hasEaten) {
     var head = this.parts[0],
         newHead = null;
 
@@ -21,11 +21,14 @@ Snake.prototype.advance = function(tick) {
         case 'left'     : newHead = head - 1; break;
         case 'right'    : newHead = head + 1; break;
         case 'up'       : newHead = head - this.map.width; break;
-        case 'bottom'   : newHead = head + this.map.width; break;
+        case 'down'     : newHead = head + this.map.width; break;
     }
 
     this.parts.unshift(newHead);
-    this.parts.pop();
+
+    if (!hasEaten) {
+        this.parts.pop();
+    }
 };
 
 Snake.prototype.isOnWall = function() {

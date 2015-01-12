@@ -8,8 +8,8 @@ function Map(width, height) {
     }
 };
 
-Map.prototype.width  = 20;
-Map.prototype.height = 20;
+Map.prototype.width  = 32;
+Map.prototype.height = 25;
 
 Map.prototype.getSize = function () {
     return this.width * this.height;

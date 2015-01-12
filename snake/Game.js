@@ -6,8 +6,8 @@ var Snake = require('./Snake');
 Game.prototype.settings = {
     snakeLength: 5,
     numberOfPeanuts: 1,
-    numberOfPlayers: 1,
-    ticksPerSecond: 1,
+    numberOfPlayers: 2,
+    ticksPerSecond: 10,
 };
 
 Game.prototype.peanuts = [];
@@ -19,6 +19,12 @@ Game.prototype.gameSession = null;
 function Game(forbiddenBlocks) {
     this.map = new Map();
 
+};
+
+Game.prototype.startGame = function() {
+    this.players = [];
+    this.peanuts = [];
+
     for(var i = 0; i < this.settings.numberOfPlayers; i++) {
         this.players.push(new Player(i, new Snake(this.settings.snakeLength, null, null, this.getOccupiedPositions(), this.map)));
     }
@@ -28,9 +34,7 @@ function Game(forbiddenBlocks) {
     }
 
     this.tick = 0;
-};
 
-Game.prototype.startGame = function() {
     this.gameSession = setInterval(this.advanceTick, (1 / this.settings.ticksPerSecond * 1000), this);
 };
 
@@ -42,16 +46,39 @@ Game.prototype.advanceTick = function(game) {
     var allPlayersDead = true;
 
     game.players.forEach(function(player) {
+        var hasEaten;
+
         if (!player.isDead) {
             allPlayersDead = false;
+
+            game.peanuts.forEach(function(peanut) {
+                if (player.snake.parts[0] === peanut.position) {
+                    hasEaten = true;
+                    peanut.isEaten = true;
+                }
+            });
+
             player.lastTick = game.tick;
-            player.snake.advance();
+            player.snake.advance(hasEaten);
             player.checkIsDead();
         }
     });
 
-    game.tick++;
-    game.onAdvanceTick(allPlayersDead);
+    game.peanuts.forEach(function(peanut) {
+        if (peanut.isEaten) {
+            peanut.isEaten = false;
+            peanut.relocate(game.getOccupiedPositions(), game.map.getSize());
+        }
+    });
+
+    if (allPlayersDead) {
+        console.log('all dead');
+        clearInterval(game.gameSession);
+    } else {
+        game.tick++;
+        game.onAdvanceTick(allPlayersDead);
+    }
+
 };
 
 Game.prototype.recieveFrame = function(frame) {
